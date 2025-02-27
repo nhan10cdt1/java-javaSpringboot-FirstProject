@@ -1,9 +1,14 @@
 package com.nhanpro.hello_springboot.dto.request;
 
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public class UserCreationRequest {
+    @Size(min = 3 , message = "username must be at least 3 character")
     private String userName;
+
+    @Size(min = 6 , message = "password must be at least 6 character")
     private String password;
     private String firstName;
     private String lastName;
