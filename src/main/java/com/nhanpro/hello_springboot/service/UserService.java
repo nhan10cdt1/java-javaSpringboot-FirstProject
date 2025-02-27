@@ -3,6 +3,8 @@ package com.nhanpro.hello_springboot.service;
 import com.nhanpro.hello_springboot.dto.request.UserCreationRequest;
 import com.nhanpro.hello_springboot.dto.request.UserUpdateRequset;
 import com.nhanpro.hello_springboot.entity.User;
+import com.nhanpro.hello_springboot.exception.AppException;
+import com.nhanpro.hello_springboot.exception.ErrorCode;
 import com.nhanpro.hello_springboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ public class UserService {
         User user = new User();
 
         if(userRepository.existsByUserName(request.getUserName()))
-            throw new RuntimeException("User existed");
+            throw new AppException(ErrorCode.USER_EXISTED);
 
         user.setUserName (request.getUserName());
         user.setPassword(request.getPassword());

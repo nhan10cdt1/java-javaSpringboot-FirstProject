@@ -5,10 +5,10 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public class UserCreationRequest {
-    @Size(min = 3 , message = "username must be at least 3 character")
+    @Size(min = 3 , message = "USERNAME_INVALID")
     private String userName;
 
-    @Size(min = 6 , message = "password must be at least 6 character")
+    @Size(min = 6 , message = "PASSWORD_INVALID")
     private String password;
     private String firstName;
     private String lastName;
