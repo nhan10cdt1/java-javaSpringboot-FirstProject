@@ -2,53 +2,53 @@ package com.nhanpro.hello_springboot.service;
 
 import com.nhanpro.hello_springboot.dto.request.UserCreationRequest;
 import com.nhanpro.hello_springboot.dto.request.UserUpdateRequset;
+import com.nhanpro.hello_springboot.dto.response.UserResponse;
 import com.nhanpro.hello_springboot.entity.User;
 import com.nhanpro.hello_springboot.exception.AppException;
 import com.nhanpro.hello_springboot.exception.ErrorCode;
+import com.nhanpro.hello_springboot.mapper.UserMapper;
 import com.nhanpro.hello_springboot.repository.UserRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public User createUser(UserCreationRequest request){
-        User user = new User();
-
         if(userRepository.existsByUserName(request.getUserName()))
             throw new AppException(ErrorCode.USER_EXISTED);
-
-        user.setUserName (request.getUserName());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
-
+        User user = userMapper.toUser(request);
         return userRepository.save(user);
-
     }
 
-    public User updateUser(String userId, UserUpdateRequset request){
-        User user = getUser(userId);
+    public UserResponse updateUser(String userId, UserUpdateRequset request){
+        //tim kieu user update co hay khong
+        User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
+        //Thuc hien update thong tin
+        userMapper.updateUser(user,request);
 
-        return  userRepository.save(user);
+        //Tra ve Response
+        return  userMapper.toUserResponse(userRepository.save(user));
     }
     public List<User> getUsers(){
         return userRepository.findAll();
     }
 
-    public User getUser(String userId){
-        return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-
+    public UserResponse getUser(String userId){
+        return userMapper.toUserResponse(userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found")));
 
     }
 
