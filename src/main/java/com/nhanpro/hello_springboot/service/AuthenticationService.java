@@ -37,7 +37,7 @@ public class AuthenticationService {
 
     @NonFinal
     @Value("${jwt.signerKey}")
-    protected static String SIGNER_KEY ;
+    protected String SIGNER_KEY ;
 
 
     public IntrospectResponse introspect(IntrospectRequest request)
@@ -56,12 +56,14 @@ public class AuthenticationService {
 
     public AuthenticationResponse authentication(AuthenticationRequest authenticationRequest ){
 
+        // Get user by UserName
         var user = userRepository.findByUserName(authenticationRequest.getUserName())
                 .orElseThrow(()-> new AppException(ErrorCode.USERNAME_NOT_EXISTED));
 
-        //Chek xem User va password da dung hay chua
+        //password matches confirm
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
+        //matches confirm
         boolean authenticated = passwordEncoder.matches(authenticationRequest.getPassword(),
                 user.getPassword());
 
@@ -69,7 +71,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
-        //Tao token
+        //Create token
         var token = generateToken(authenticationRequest.getUserName());
 
         return AuthenticationResponse.builder()
@@ -80,6 +82,7 @@ public class AuthenticationService {
 
 
     private String generateToken(String userName){
+
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()

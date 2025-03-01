@@ -27,25 +27,29 @@ public class UserService {
     private final UserMapper userMapper;
 
     public User createUser(UserCreationRequest request){
+        // duplicate confirm
         if(userRepository.existsByUserName(request.getUserName()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
+        //Mapper UserCreationRequest -> User
         User user = userMapper.toUser(request);
 
+        //Encrypt password
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        //Save to DB
         return userRepository.save(user);
     }
 
     public UserResponse updateUser(String userId, UserUpdateRequset request){
-        //tim kieu user update co hay khong
+        //Check update user in DB.
         User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-        //Thuc hien update thong tin
+        //Update
         userMapper.updateUser(user,request);
 
-        //Tra ve Response
+        //Return Response
         return  userMapper.toUserResponse(userRepository.save(user));
     }
     public List<User> getUsers(){
