@@ -8,9 +8,13 @@ import com.nhanpro.hello_springboot.repository.UserRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     User toUser(UserCreationRequest request);
     UserResponse toUserResponse(User user);
     void updateUser(@MappingTarget  User user, UserUpdateRequset userUpdateRequset) ;
+    List<UserResponse> toListUserResponse(List<User> users);
+
 }

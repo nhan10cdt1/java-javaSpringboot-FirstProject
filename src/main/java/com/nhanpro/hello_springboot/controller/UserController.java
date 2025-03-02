@@ -5,6 +5,7 @@ import com.nhanpro.hello_springboot.dto.request.UserCreationRequest;
 import com.nhanpro.hello_springboot.dto.request.UserUpdateRequset;
 import com.nhanpro.hello_springboot.dto.response.UserResponse;
 import com.nhanpro.hello_springboot.entity.User;
+import com.nhanpro.hello_springboot.mapper.UserMapper;
 import com.nhanpro.hello_springboot.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -23,29 +24,35 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody  @Valid UserCreationRequest request){
-
-        ApiResponse<User> apiResponse = new ApiResponse<>();
+    ApiResponse<UserResponse> createUser(@RequestBody  @Valid UserCreationRequest request){
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.createUser(request));
-
         return  apiResponse;
 
     }
 
     @GetMapping
-    List<User> getUsers(){
-        return  userService.getUsers();
+    ApiResponse<List<UserResponse>> getUsers(){
+        ApiResponse<List<UserResponse>> apiResponse  = new ApiResponse<>();
+        apiResponse.setResult( userService.getUsers());
+        return apiResponse;
     }
 
     @GetMapping("/{userId}")
-    UserResponse getUser(@PathVariable("userId") String userId){
+    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId){
         return  userService.getUser(userId);
     }
 
     @PutMapping("/{userId}")
-    UserResponse updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequset request ){
-        return userService.updateUser(userId,request);
+    ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId,
+                                         @RequestBody UserUpdateRequset request ){
+        ApiResponse<UserResponse> apiResponse  = new ApiResponse<>();
+        apiResponse.setResult(userService.updateUser(userId,request));
+        return  apiResponse;
     }
 
     @DeleteMapping("/{userId}")
