@@ -10,6 +10,7 @@ import com.nhanpro.hello_springboot.exception.AppException;
 import com.nhanpro.hello_springboot.exception.ErrorCode;
 import com.nhanpro.hello_springboot.mapper.UserMapper;
 import com.nhanpro.hello_springboot.repository.UserRepository;
+import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -55,19 +56,21 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         //Update
         userMapper.updateUser(user, request);
+
         //Return apiResponse
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public List<UserResponse> getUsers() {
-        return userMapper.toListUserResponse(userRepository.findAll());
+        return  userRepository.findAll().stream()
+                .map(userMapper:: toUserResponse).toList();
     }
 
-    public ApiResponse<UserResponse> getUser(String userId) {
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(userMapper.toUserResponse(userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"))));
-        return apiResponse;
+    public UserResponse getUser(String userId) {
+        return userMapper.toUserResponse(
+          userRepository.findById(userId)
+                  .orElseThrow(()->new AppException(ErrorCode.USERNAME_NOT_EXISTED))
+        );
 
     }
 
