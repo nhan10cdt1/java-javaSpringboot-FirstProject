@@ -57,6 +57,15 @@ public class UserController {
                 .build();
     }
 
+    // Dua vao token ma co the lay ve thong tin cua chinh minh, khong can mot pram nao khac
+    @GetMapping("/myInfo")
+    ApiResponse<UserResponse> getMyInfo() {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfo())
+                .build();
+    }
+
+
     @PutMapping("/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId,
                                          @RequestBody UserUpdateRequset request) {
